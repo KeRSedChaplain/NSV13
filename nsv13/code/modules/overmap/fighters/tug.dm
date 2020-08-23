@@ -58,6 +58,8 @@
 /obj/vehicle/sealed/car/realistic/fighter_tug/ui_act(action, params, datum/tgui/ui)
 	if(..())
 		return
+	if(!isliving(usr))
+		return FALSE
 	var/list/drivers = return_drivers()
 	if(!LAZYFIND(drivers, ui.user))
 		to_chat(ui.user, "<span class='warning'>You can't reach the controls from back here...</span>")
@@ -96,7 +98,7 @@
 	if(!target || LAZYFIND(loaded, target) || target.mag_lock)//No sucking
 		return FALSE
 	loaded += target
-	STOP_PROCESSING(SSovermap, target)
+	STOP_PROCESSING(SSphysics_processing, target)
 	target.forceMove(src)
 	vis_contents += target
 	playsound(src, 'nsv13/sound/effects/ship/freespace2/crane_1.wav', 100, FALSE)
@@ -184,7 +186,7 @@
 		if(FL)
 			targetLoc = get_turf(FL)
 		target.forceMove(targetLoc)
-		START_PROCESSING(SSovermap, target)
+		START_PROCESSING(SSphysics_processing, target)
 
 /obj/item/key/fighter_tug
 	name = "fighter tug key"

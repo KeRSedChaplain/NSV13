@@ -160,8 +160,14 @@ GLOBAL_LIST_INIT(computer_beeps, list('nsv13/sound/effects/computer/beep.ogg','n
 	data["flakrange"] = linked.get_flak_range(linked.last_target)
 	data["integrity"] = linked.obj_integrity
 	data["max_integrity"] = linked.max_integrity
-	data["hullplates"] = linked.armour_plates
-	data["max_hullplates"] = linked.max_armour_plates
+	data["quadrant_fs_armour_current"] = linked.armour_quadrants["forward_starboard"]["current_armour"]
+	data["quadrant_fs_armour_max"] = linked.armour_quadrants["forward_starboard"]["max_armour"]
+	data["quadrant_as_armour_current"] = linked.armour_quadrants["aft_starboard"]["current_armour"]
+	data["quadrant_as_armour_max"] = linked.armour_quadrants["aft_starboard"]["max_armour"]
+	data["quadrant_ap_armour_current"] = linked.armour_quadrants["aft_port"]["current_armour"]
+	data["quadrant_ap_armour_max"] = linked.armour_quadrants["aft_port"]["max_armour"]
+	data["quadrant_fp_armour_current"] = linked.armour_quadrants["forward_port"]["current_armour"]
+	data["quadrant_fp_armour_max"] = linked.armour_quadrants["forward_port"]["max_armour"]
 	data["weapons"] = list()
 	data["target_name"] = (linked.target_lock) ? linked.target_lock.name : "none"
 	var/scan_range = (linked?.dradis) ? linked.dradis.sensor_range : 45 //hide targets that are outside of sensor range to avoid cheese.
@@ -172,8 +178,8 @@ GLOBAL_LIST_INIT(computer_beeps, list('nsv13/sound/effects/computer/beep.ogg','n
 		for(var/obj/machinery/ship_weapon/SW in SW_type.weapons["all"])
 			if(!SW)
 				continue
-			max_ammo += SW.max_ammo
-			ammo += SW.ammo.len
+			max_ammo += SW.get_max_ammo()
+			ammo += SW.get_ammo()
 		data["weapons"] += list(list("name" = thename, "ammo" = ammo, "maxammo" = max_ammo))
 	data["ships"] = list()
 	for(var/obj/structure/overmap/OM in GLOB.overmap_objects)
@@ -329,8 +335,8 @@ GLOBAL_LIST_INIT(computer_beeps, list('nsv13/sound/effects/computer/beep.ogg','n
 	density = FALSE
 	layer = LATTICE_LAYER //under pipes
 	plane = FLOOR_PLANE
-	obj_integrity = 100
-	max_integrity = 100
+	obj_integrity = 200
+	max_integrity = 200
 	var/obj/structure/overmap/parent = null
 	var/armour_scale_modifier = 4
 	var/armour_broken = FALSE
@@ -370,6 +376,58 @@ Method to try locate an overmap object that we should attach to. Recursively cal
 	parent?.armour_plates --
 	. = ..()
 
+/datum/reagent/hull_repair_juice
+	name = "Hull Repair Juice"
+	description = "Repairs hull plating rapidly."
+	reagent_state = LIQUID
+	color = "#CC8899"
+	metabolization_rate = 4
+	taste_description = "metallic hull repair juice"
+	process_flags = ORGANIC | SYNTHETIC
+
+//Hull repair juice -> stabilizing agent, iron, carbon
+
+/obj/effect/particle_effect/foam/hull_repair_juice
+	name = "Hull Repair Foam"
+	slippery_foam = FALSE
+	color = "#CC8899"
+
+/obj/structure/reagent_dispensers/foamtank/hull_repair_juice
+	name = "hull repair juice tank"
+	desc = "A tank full of hull repair foam."
+	icon_state = "foam"
+	reagent_id = /datum/reagent/hull_repair_juice
+	tank_volume = 1500 //I NEED A LOT OF FOAM OK.
+
+/obj/item/extinguisher/advanced/hull_repair_juice
+	name = "hull damage extinguisher"
+	desc = "For when the hull plates just won't STOP."
+	icon = 'nsv13/icons/obj/inflatable.dmi'
+	chem = /datum/reagent/hull_repair_juice
+	tanktype = /obj/structure/reagent_dispensers/foamtank/hull_repair_juice
+
+/datum/chemical_reaction/hull_repair_juice
+	name = "Hull Repair Juice"
+	id = /datum/reagent/hull_repair_juice
+	results = list(/datum/reagent/hull_repair_juice = 10)
+	required_reagents = list(/datum/reagent/stabilizing_agent = 1, /datum/reagent/iron = 1,/datum/reagent/carbon = 1)
+
+/datum/reagent/hull_repair_juice/reaction_turf(turf/open/T, reac_volume)
+	if (!istype(T))
+		return
+
+	if(reac_volume >= 1)
+		var/obj/effect/particle_effect/foam/F = (locate(/obj/effect/particle_effect/foam) in T)
+		if(!F)
+			F = new(T)
+		else if(istype(F))
+			F.lifetime = initial(F.lifetime) //reduce object churn a little bit when using smoke by keeping existing foam alive a bit longer
+
+	for(var/obj/structure/hull_plate/HP in T.contents)
+		if(!istype(HP))
+			continue
+		HP.try_repair(HP.max_integrity)
+
 /obj/structure/hull_plate/proc/relay_damage(datum/source, amount)
 	if(!amount)
 		return //No 0 damage
@@ -393,7 +451,8 @@ Method to try locate an overmap object that we should attach to. Recursively cal
 	obj_integrity = (obj_integrity + amount < max_integrity) ? obj_integrity + amount : max_integrity
 	update_icon()
 	if(obj_integrity <= max_integrity)
-		to_chat(user, "<span class='warning'>You have fully repaired [src].</span>")
+		if(user)
+			to_chat(user, "<span class='warning'>You have fully repaired [src].</span>")
 		obj_integrity = max_integrity
 		update_icon()
 		if(armour_broken)
@@ -421,7 +480,8 @@ Method to try locate an overmap object that we should attach to. Recursively cal
 	if(istype(src, /obj/structure/overmap/asteroid)) //Shouldn't be repairing over time
 		return
 	if(mass > MASS_TINY) //Prevents fighters regenerating
-		try_repair(get_repair_efficiency() / 25) //Scale the value. If you have 80% of your armour plates repaired, the ship takes about 7.5 minutes to fully repair. If you only have 25% of your plates operational, it will take half an hour to fully repair the ship.
+		if(!use_armour_quadrants) //Checking to see if we are using the armour quad system
+			try_repair(get_repair_efficiency() / 25) //Scale the value. If you have 80% of your armour plates repaired, the ship takes about 7.5 minutes to fully repair. If you only have 25% of your plates operational, it will take half an hour to fully repair the ship.
 
 /obj/structure/hull_plate/attackby(obj/item/W, mob/user)
 	if(W.tool_behaviour == TOOL_WELDER)

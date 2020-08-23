@@ -682,6 +682,12 @@
 	},
 /turf/open/floor/plasteel,
 /area/crew_quarters/cryopods)
+"abA" = (
+/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden{
+	dir = 4
+	},
+/turf/closed/wall/r_wall,
+/area/medical/virology)
 "abB" = (
 /obj/structure/closet/secure_closet/security/sec,
 /obj/effect/turf_decal/stripes/end{
@@ -2735,19 +2741,39 @@
 /obj/structure/disposalpipe/segment{
 	dir = 4
 	},
+/obj/machinery/atmospherics/pipe/simple/supply/hidden{
+	dir = 6
+	},
 /turf/open/floor/plasteel/white,
 /area/medical/virology)
 "aez" = (
+/obj/machinery/door/airlock/virology{
+	id_tag = "Viro2";
+	name = "Virology Lab 1";
+	req_access_txt = "39"
+	},
 /obj/structure/cable/yellow{
 	icon_state = "4-8"
 	},
-/obj/effect/turf_decal/tile/green{
+/obj/effect/turf_decal/stripes/line{
 	dir = 8
+	},
+/obj/effect/turf_decal/stripes/line{
+	dir = 4
+	},
+/obj/machinery/door/firedoor/border_only{
+	dir = 4
+	},
+/obj/machinery/door/firedoor/border_only{
+	dir = 8
+	},
+/obj/machinery/atmospherics/pipe/simple/supply/hidden{
+	dir = 4
 	},
 /obj/structure/disposalpipe/segment{
 	dir = 4
 	},
-/turf/open/floor/plasteel/white,
+/turf/open/floor/plasteel,
 /area/medical/virology)
 "aeA" = (
 /obj/structure/cable/yellow{
@@ -2917,27 +2943,19 @@
 /turf/open/floor/plasteel/white,
 /area/medical/virology)
 "aeL" = (
-/obj/machinery/door/airlock/virology{
-	id_tag = "Viro2";
-	name = "Virology Lab 1";
-	req_access_txt = "39"
-	},
 /obj/structure/cable/yellow{
 	icon_state = "4-8"
 	},
-/obj/effect/turf_decal/stripes/line{
+/obj/effect/turf_decal/tile/green{
 	dir = 8
 	},
-/obj/effect/turf_decal/stripes/line{
+/obj/structure/disposalpipe/segment{
 	dir = 4
 	},
-/obj/machinery/door/firedoor/border_only{
-	dir = 4
+/obj/machinery/atmospherics/pipe/simple/supply/hidden{
+	dir = 10
 	},
-/obj/machinery/door/firedoor/border_only{
-	dir = 8
-	},
-/turf/open/floor/plasteel,
+/turf/open/floor/plasteel/white,
 /area/medical/virology)
 "aeM" = (
 /obj/machinery/atmospherics/pipe/simple/scrubbers/hidden{
@@ -2989,6 +3007,24 @@
 	dir = 8
 	},
 /turf/open/floor/plasteel,
+/area/medical/virology)
+"aeO" = (
+/obj/machinery/atmospherics/pipe/manifold/supply/hidden{
+	dir = 4
+	},
+/obj/effect/turf_decal/tile/green{
+	dir = 4
+	},
+/turf/open/floor/plasteel/white,
+/area/medical/virology)
+"aeP" = (
+/obj/machinery/atmospherics/pipe/manifold/supply/hidden{
+	dir = 8
+	},
+/obj/effect/turf_decal/tile/green{
+	dir = 8
+	},
+/turf/open/floor/plasteel/white,
 /area/medical/virology)
 "aeR" = (
 /obj/structure/closet/emcloset,
@@ -44771,7 +44807,6 @@
 	icon_state = "1-8"
 	},
 /obj/item/radio/intercom{
-	anyai = 1;
 	frequency = 1423;
 	name = "Interrogation Intercom";
 	pixel_y = -58
@@ -45978,7 +46013,6 @@
 /obj/structure/table/reinforced,
 /obj/item/flashlight/lamp,
 /obj/item/radio/intercom{
-	anyai = 1;
 	broadcasting = 1;
 	frequency = 1423;
 	listening = 0;
@@ -47553,7 +47587,6 @@
 /area/security/brig)
 "bEf" = (
 /obj/item/radio/intercom{
-	anyai = 1;
 	freerange = 1;
 	listening = 0;
 	name = "Custom Channel";
@@ -47566,7 +47599,6 @@
 	pixel_x = -27
 	},
 /obj/item/radio/intercom{
-	anyai = 1;
 	freerange = 1;
 	frequency = 1447;
 	name = "Private Channel";
@@ -47698,7 +47730,6 @@
 /area/ai_monitored/turret_protected/ai)
 "bEm" = (
 /obj/item/radio/intercom{
-	anyai = 1;
 	freerange = 1;
 	listening = 0;
 	name = "Custom Channel";
@@ -47711,7 +47742,6 @@
 	pixel_x = 27
 	},
 /obj/item/radio/intercom{
-	anyai = 1;
 	freerange = 1;
 	frequency = 1447;
 	name = "Private Channel";
@@ -48953,14 +48983,12 @@
 	pixel_y = -7
 	},
 /obj/item/radio/intercom{
-	anyai = 1;
 	freerange = 1;
 	listening = 0;
 	name = "Custom Channel";
 	pixel_y = -27
 	},
 /obj/item/radio/intercom{
-	anyai = 1;
 	freerange = 1;
 	frequency = 1447;
 	name = "Private Channel";
@@ -114283,24 +114311,6 @@
 	},
 /turf/open/floor/plasteel,
 /area/medical/virology)
-"dTa" = (
-/obj/machinery/atmospherics/pipe/manifold/supply/hidden{
-	dir = 1
-	},
-/obj/effect/turf_decal/tile/green{
-	dir = 4
-	},
-/turf/open/floor/plasteel/white,
-/area/medical/virology)
-"dTc" = (
-/obj/machinery/atmospherics/pipe/manifold/supply/hidden{
-	dir = 1
-	},
-/obj/effect/turf_decal/tile/green{
-	dir = 8
-	},
-/turf/open/floor/plasteel/white,
-/area/medical/virology)
 "dTd" = (
 /obj/machinery/atmospherics/pipe/manifold4w/supply/hidden,
 /obj/effect/turf_decal/tile/green{
@@ -173141,7 +173151,7 @@ dPq
 dPq
 dPq
 dTY
-dPq
+abA
 aeN
 dPq
 dQl
@@ -173908,7 +173918,7 @@ dPq
 adS
 dRe
 aey
-dTa
+aeO
 dTT
 dUQ
 dVC
@@ -174163,8 +174173,8 @@ cHU
 aaa
 dPq
 dPq
-dPq
-aeL
+abA
+aez
 dPq
 dPq
 dPq
@@ -174421,8 +174431,8 @@ aad
 dPq
 adT
 adX
-aez
-dTc
+aeL
+aeP
 dTU
 dPq
 dVD
